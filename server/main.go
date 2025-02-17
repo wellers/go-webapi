@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -29,8 +30,10 @@ func connectMongo() *mongo.Collection {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
+	mongoURI := os.Getenv("MONGO_URI")
+
 	var err error
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://192.168.50.100:27017"))
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		log.Fatal("MongoDB connection error:", err)
 	}

@@ -5,9 +5,20 @@ services:
       - 27017:27017
     restart: on-failure
     volumes:
-      - ~/temp:/data/db 
+      - ~/temp:/data/db
+    networks:
+      - my_network
   server:
     build: ./server
     ports:
       - 8080:80
     restart: on-failure    
+    depends_on:
+      - mongo
+    networks:
+      - my_network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+networks:
+  my_network:
+    driver: bridge
