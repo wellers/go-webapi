@@ -1,12 +1,11 @@
 FROM golang:1.24-alpine
-
-WORKDIR /usr/src/app
+EXPOSE 80
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
+COPY *.go ./
 RUN go build -v -o /usr/local/bin/app ./...
 
-EXPOSE 80
 CMD ["app"]
