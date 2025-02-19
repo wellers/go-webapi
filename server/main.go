@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,9 +19,9 @@ func main() {
 	collection = connectMongo()
 	defer disconnectMongo()
 
-	r := mux.NewRouter()
+	r := gin.Default()
 	registerRoutes(r)
-	listenAndServe(r)
+	r.Run(":80")
 }
 
 func connectMongo() *mongo.Collection {
@@ -59,23 +57,8 @@ func disconnectMongo() {
 	fmt.Println("MongoDB disconnected.")
 }
 
-func registerRoutes(r *mux.Router) {
-	r.HandleFunc("/status", getStatus).Methods("GET")
-	r.HandleFunc("/book", insertBook).Methods("POST")
-	r.HandleFunc("/books", getBooks).Methods("GET")
-}
-
-func listenAndServe(r *mux.Router) {
-	listener, err := net.Listen("tcp", ":80")
-	if err != nil {
-		fmt.Println("Error creating listener:", err)
-		return
-	}
-
-	fmt.Println("Listening on port 80...")
-
-	err = http.Serve(listener, r)
-	if err != nil {
-		fmt.Println("Error starting server:", err)
-	}
+func registerRoutes(r *gin.Engine) {
+	r.GET("/status", getStatus)
+	r.POST("/book", insertBook)
+	r.GET("/books", getBooks)
 }
