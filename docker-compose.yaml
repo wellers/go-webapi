@@ -19,6 +19,7 @@ services:
       - my_network
     environment:
       - MONGO_URI=mongodb://mongo:27017
+      - VALID_TOKEN=test1234
 networks:
   my_network:
     driver: bridge

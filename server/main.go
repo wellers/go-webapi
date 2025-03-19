@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"server/internal/handlers"
+	"server/internal/middleware"
 	"server/internal/repos"
 
 	"github.com/gin-gonic/gin"
@@ -18,13 +19,20 @@ import (
 var client *mongo.Client
 
 func main() {
+	r := gin.Default()
+
 	collection := connectMongo()
 	defer disconnectMongo()
 
-	r := gin.Default()
-
 	repo := &repos.MongoBookRepository{Collection: collection}
-	registerRoutes(r, repo)
+
+	validToken := os.Getenv("VALID_TOKEN")
+	if validToken == "" {
+		fmt.Println("Warning: VALID_TOKEN is not set!")
+		return
+	}
+
+	registerRoutes(r, repo, validToken)
 
 	r.Run(":80")
 }
@@ -62,15 +70,22 @@ func disconnectMongo() {
 	fmt.Println("MongoDB disconnected.")
 }
 
-func registerRoutes(r *gin.Engine, repo *repos.MongoBookRepository) {
+func registerRoutes(r *gin.Engine, repo *repos.MongoBookRepository, validToken string) {
 	r.GET("/status", handlers.GetStatus)
-	r.POST("/book", func(c *gin.Context) {
-		handlers.InsertBook(c, repo)
-	})
-	r.GET("/books", func(c *gin.Context) {
-		handlers.GetBooks(c, repo)
-	})
-	r.DELETE("/book/:id", func(c *gin.Context) {
-		handlers.DeleteBook(c, repo)
-	})
+
+	authMiddleware := middleware.AuthMiddleware(validToken)
+
+	authorised := r.Group("/")
+	authorised.Use(authMiddleware)
+	{
+		authorised.POST("/book", func(c *gin.Context) {
+			handlers.InsertBook(c, repo)
+		})
+		authorised.GET("/books", func(c *gin.Context) {
+			handlers.GetBooks(c, repo)
+		})
+		authorised.DELETE("/book/:id", func(c *gin.Context) {
+			handlers.DeleteBook(c, repo)
+		})
+	}
 }

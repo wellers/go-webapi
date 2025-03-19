@@ -117,7 +117,7 @@ func TestDeleteBook_Success(t *testing.T) {
 		handlers.DeleteBook(c, mockRepo)
 	})
 
-	req, _ := http.NewRequest("DELETE", "/book/1", nil)
+	req, _ := http.NewRequest("DELETE", "/book/67b62e32b475b5eccc413498", nil)
 	req.Header.Set("Content-Type", "applications/json")
 	w := httptest.NewRecorder()
 
