@@ -28,7 +28,7 @@ func main() {
 
 	validToken := os.Getenv("VALID_TOKEN")
 	if validToken == "" {
-		fmt.Println("Warning: VALID_TOKEN is not set!")
+		log.Fatal("VALID_TOKEN is not set")
 		return
 	}
 
