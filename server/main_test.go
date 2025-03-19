@@ -8,6 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"server/internal/handlers"
+	"server/internal/mocks"
+	"server/internal/types"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,7 +19,7 @@ import (
 
 func TestStatus_Success(t *testing.T) {
 	router := gin.Default()
-	router.GET("/status", getStatus)
+	router.GET("/status", handlers.GetStatus)
 
 	req, err := http.NewRequest(http.MethodGet, "/status", nil)
 	if err != nil {
@@ -42,12 +46,12 @@ func TestInsertBook_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	mockRepo := new(MockBookRepository)
+	mockRepo := new(mocks.MockBookRepository)
 
 	mockRepo.On("InsertOne", mock.Anything, mock.Anything).Return(nil, nil)
 
 	router.POST("/book", func(c *gin.Context) {
-		insertBook(c, mockRepo)
+		handlers.InsertBook(c, mockRepo)
 	})
 
 	body := `{"name": "The Go Programming Language", "author": "Alan Donovan", "publish_year": 2015}`
@@ -59,7 +63,7 @@ func TestInsertBook_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response BooksApiResponse
+	var response types.BooksApiResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 	assert.True(t, response.Success)
@@ -72,12 +76,12 @@ func TestFind_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	mockRepo := new(MockBookRepository)
+	mockRepo := new(mocks.MockBookRepository)
 
 	mockRepo.On("Find", mock.Anything, mock.Anything).Return(nil, nil)
 
 	router.GET("/books", func(c *gin.Context) {
-		getBooks(c, mockRepo)
+		handlers.GetBooks(c, mockRepo)
 	})
 
 	req, _ := http.NewRequest("GET", "/books", nil)
@@ -88,12 +92,12 @@ func TestFind_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response BooksApiResponse
+	var response types.BooksApiResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 	assert.True(t, response.Success)
 	assert.Equal(t, "Documents matching filter.", response.Message)
-	assert.Equal(t, []Book{
+	assert.Equal(t, []types.Book{
 		{Name: "Book 1", Author: "Author 1", PublishYear: 2022},
 		{Name: "Book 2", Author: "Author 2", PublishYear: 2023},
 	}, response.Documents)
@@ -105,12 +109,12 @@ func TestDeleteBook_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
-	mockRepo := new(MockBookRepository)
+	mockRepo := new(mocks.MockBookRepository)
 
 	mockRepo.On("DeleteOne", mock.Anything, mock.Anything).Return(nil, nil)
 
 	router.DELETE("/book/:id", func(c *gin.Context) {
-		deleteBook(c, mockRepo)
+		handlers.DeleteBook(c, mockRepo)
 	})
 
 	req, _ := http.NewRequest("DELETE", "/book/1", nil)
@@ -121,7 +125,7 @@ func TestDeleteBook_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response BooksApiResponse
+	var response types.BooksApiResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 	assert.True(t, response.Success)

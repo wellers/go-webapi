@@ -1,7 +1,10 @@
-package main
+package mocks
 
 import (
 	"context"
+
+	"server/internal/repos"
+	"server/internal/types"
 
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,12 +14,12 @@ type MockBookRepository struct {
 	mock.Mock
 }
 
-func (m *MockBookRepository) InsertOne(ctx context.Context, book Book) error {
+func (m *MockBookRepository) InsertOne(ctx context.Context, book types.Book) error {
 	args := m.Called(ctx, book)
 	return args.Error(0)
 }
 
-func (m *MockBookRepository) Find(ctx context.Context, filter bson.M) (cur BookCursor, err error) {
+func (m *MockBookRepository) Find(ctx context.Context, filter bson.M) (cur repos.BookCursor, err error) {
 	args := m.Called(ctx, filter)
 
 	data := []bson.M{

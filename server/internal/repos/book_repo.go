@@ -1,7 +1,9 @@
-package main
+package repos
 
 import (
 	"context"
+
+	"server/internal/types"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,7 +16,7 @@ type BookCursor interface {
 }
 
 type BookRepository interface {
-	InsertOne(ctx context.Context, book Book) error
+	InsertOne(ctx context.Context, book types.Book) error
 	Find(ctx context.Context, filter bson.M) (cur BookCursor, err error)
 	DeleteOne(ctx context.Context, filter bson.M) error
 }
@@ -27,7 +29,7 @@ func (m *MongoBookRepository) Find(ctx context.Context, filter bson.M) (cur Book
 	return m.Collection.Find(ctx, filter)
 }
 
-func (m *MongoBookRepository) InsertOne(ctx context.Context, book Book) error {
+func (m *MongoBookRepository) InsertOne(ctx context.Context, book types.Book) error {
 	_, err := m.Collection.InsertOne(ctx, book)
 	return err
 }

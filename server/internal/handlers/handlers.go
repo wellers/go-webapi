@@ -1,24 +1,27 @@
-package main
+package handlers
 
 import (
 	"net/http"
 	"time"
 
+	"server/internal/repos"
+	"server/internal/types"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func getStatus(c *gin.Context) {
+func GetStatus(c *gin.Context) {
 	timestamp := time.Now().UTC().UnixMilli()
 
-	c.JSON(http.StatusOK, StatusApiResponse{Timestamp: timestamp})
+	c.JSON(http.StatusOK, types.StatusApiResponse{Timestamp: timestamp})
 }
 
-func insertBook(c *gin.Context, repo BookRepository) {
-	var book Book
+func InsertBook(c *gin.Context, repo repos.BookRepository) {
+	var book types.Book
 
 	if err := c.ShouldBindJSON(&book); err != nil {
-		c.JSON(http.StatusBadRequest, BooksApiResponse{
+		c.JSON(http.StatusBadRequest, types.BooksApiResponse{
 			Success: false,
 			Message: "Invalid request payload",
 		})
@@ -26,7 +29,7 @@ func insertBook(c *gin.Context, repo BookRepository) {
 	}
 
 	if book.Name == "" || book.Author == "" || book.PublishYear == 0 {
-		c.JSON(http.StatusBadRequest, BooksApiResponse{
+		c.JSON(http.StatusBadRequest, types.BooksApiResponse{
 			Success: false,
 			Message: "Missing required fields",
 		})
@@ -35,25 +38,25 @@ func insertBook(c *gin.Context, repo BookRepository) {
 
 	err := repo.InsertOne(c, book)
 	if err != nil {
-		c.JSON(http.StatusOK, BooksApiResponse{
+		c.JSON(http.StatusOK, types.BooksApiResponse{
 			Success: false,
 			Message: "Failed to insert book: " + err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, BooksApiResponse{
+	c.JSON(http.StatusOK, types.BooksApiResponse{
 		Success: true,
 		Message: "1 book inserted.",
 	})
 }
 
-func getBooks(c *gin.Context, repo BookRepository) {
-	var results []Book
+func GetBooks(c *gin.Context, repo repos.BookRepository) {
+	var results []types.Book
 
 	cursor, err := repo.Find(c, bson.M{})
 	if err != nil {
-		c.JSON(http.StatusOK, BooksApiResponse{
+		c.JSON(http.StatusOK, types.BooksApiResponse{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -62,9 +65,9 @@ func getBooks(c *gin.Context, repo BookRepository) {
 	defer cursor.Close(c)
 
 	for cursor.Next(c) {
-		var result Book
+		var result types.Book
 		if err := cursor.Decode(&result); err != nil {
-			c.JSON(http.StatusOK, BooksApiResponse{
+			c.JSON(http.StatusOK, types.BooksApiResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -73,18 +76,18 @@ func getBooks(c *gin.Context, repo BookRepository) {
 		results = append(results, result)
 	}
 
-	c.JSON(http.StatusOK, BooksApiResponse{
+	c.JSON(http.StatusOK, types.BooksApiResponse{
 		Success:   true,
 		Message:   "Documents matching filter.",
 		Documents: results,
 	})
 }
 
-func deleteBook(c *gin.Context, repo BookRepository) {
+func DeleteBook(c *gin.Context, repo repos.BookRepository) {
 	id := c.Param("id")
 
 	if id == "" {
-		c.JSON(http.StatusBadRequest, BooksApiResponse{
+		c.JSON(http.StatusBadRequest, types.BooksApiResponse{
 			Success: false,
 			Message: "Missing required fields",
 		})
@@ -93,14 +96,14 @@ func deleteBook(c *gin.Context, repo BookRepository) {
 
 	err := repo.DeleteOne(c, bson.M{"id": id})
 	if err != nil {
-		c.JSON(http.StatusOK, BooksApiResponse{
+		c.JSON(http.StatusOK, types.BooksApiResponse{
 			Success: false,
 			Message: "Failed to delete book: " + err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, BooksApiResponse{
+	c.JSON(http.StatusOK, types.BooksApiResponse{
 		Success: true,
 		Message: "1 book deleted.",
 	})

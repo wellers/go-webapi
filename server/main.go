@@ -7,6 +7,9 @@ import (
 	"os"
 	"time"
 
+	"server/internal/handlers"
+	"server/internal/repos"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,7 +23,7 @@ func main() {
 
 	r := gin.Default()
 
-	repo := &MongoBookRepository{collection}
+	repo := &repos.MongoBookRepository{Collection: collection}
 	registerRoutes(r, repo)
 
 	r.Run(":80")
@@ -59,15 +62,15 @@ func disconnectMongo() {
 	fmt.Println("MongoDB disconnected.")
 }
 
-func registerRoutes(r *gin.Engine, repo *MongoBookRepository) {
-	r.GET("/status", getStatus)
+func registerRoutes(r *gin.Engine, repo *repos.MongoBookRepository) {
+	r.GET("/status", handlers.GetStatus)
 	r.POST("/book", func(c *gin.Context) {
-		insertBook(c, repo)
+		handlers.InsertBook(c, repo)
 	})
 	r.GET("/books", func(c *gin.Context) {
-		getBooks(c, repo)
+		handlers.GetBooks(c, repo)
 	})
 	r.DELETE("/book/:id", func(c *gin.Context) {
-		deleteBook(c, repo)
+		handlers.DeleteBook(c, repo)
 	})
 }
