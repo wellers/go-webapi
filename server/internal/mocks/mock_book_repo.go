@@ -19,7 +19,7 @@ func (m *MockBookRepository) InsertOne(ctx context.Context, book types.Book) err
 	return args.Error(0)
 }
 
-func (m *MockBookRepository) Find(ctx context.Context, filter bson.M) (cur repos.BookCursor, err error) {
+func (m *MockBookRepository) Find(ctx context.Context, filter types.BookFindFilter) (cur repos.BookCursor, err error) {
 	args := m.Called(ctx, filter)
 
 	data := []bson.M{
@@ -30,7 +30,7 @@ func (m *MockBookRepository) Find(ctx context.Context, filter bson.M) (cur repos
 	return &MockCursor{Data: data, CurrentIdx: 0}, args.Error(1)
 }
 
-func (m *MockBookRepository) DeleteOne(ctx context.Context, filter bson.M) error {
+func (m *MockBookRepository) DeleteOne(ctx context.Context, filter types.BookDeleteFilter) error {
 	args := m.Called(ctx, filter)
 	return args.Error(0)
 }

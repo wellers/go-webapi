@@ -8,7 +8,7 @@ import (
 	"server/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetStatus(c *gin.Context) {
@@ -54,7 +54,7 @@ func InsertBook(c *gin.Context, repo repos.BookRepository) {
 func GetBooks(c *gin.Context, repo repos.BookRepository) {
 	var results []types.Book
 
-	cursor, err := repo.Find(c, bson.M{})
+	cursor, err := repo.Find(c, types.BookFindFilter{})
 	if err != nil {
 		c.JSON(http.StatusOK, types.BooksApiResponse{
 			Success: false,
@@ -94,7 +94,16 @@ func DeleteBook(c *gin.Context, repo repos.BookRepository) {
 		return
 	}
 
-	err := repo.DeleteOne(c, bson.M{"id": id})
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BooksApiResponse{
+			Success: false,
+			Message: "Failed to parse id: " + err.Error(),
+		})
+		return
+	}
+
+	err = repo.DeleteOne(c, types.BookDeleteFilter{Id: objectId})
 	if err != nil {
 		c.JSON(http.StatusOK, types.BooksApiResponse{
 			Success: false,
