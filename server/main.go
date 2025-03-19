@@ -12,15 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var collection *mongo.Collection
 var client *mongo.Client
 
 func main() {
-	collection = connectMongo()
+	collection := connectMongo()
 	defer disconnectMongo()
 
 	r := gin.Default()
-	registerRoutes(r)
+
+	repo := &MongoBookRepository{collection}
+	registerRoutes(r, repo)
+
 	r.Run(":80")
 }
 
@@ -57,8 +59,12 @@ func disconnectMongo() {
 	fmt.Println("MongoDB disconnected.")
 }
 
-func registerRoutes(r *gin.Engine) {
+func registerRoutes(r *gin.Engine, repo *MongoBookRepository) {
 	r.GET("/status", getStatus)
-	r.POST("/book", insertBook)
-	r.GET("/books", getBooks)
+	r.POST("/book", func(c *gin.Context) {
+		insertBook(c, repo)
+	})
+	r.GET("/books", func(c *gin.Context) {
+		getBooks(c, repo)
+	})
 }
