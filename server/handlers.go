@@ -51,7 +51,7 @@ func insertBook(c *gin.Context, repo BookRepository) {
 func getBooks(c *gin.Context, repo BookRepository) {
 	var results []Book
 
-	cursor, err := repo.Find(c, bson.D{})
+	cursor, err := repo.Find(c, bson.M{})
 	if err != nil {
 		c.JSON(http.StatusOK, BooksApiResponse{
 			Success: false,
@@ -73,5 +73,35 @@ func getBooks(c *gin.Context, repo BookRepository) {
 		results = append(results, result)
 	}
 
-	c.JSON(http.StatusOK, BooksApiResponse{Success: true, Message: "Documents matching filter.", Documents: results})
+	c.JSON(http.StatusOK, BooksApiResponse{
+		Success:   true,
+		Message:   "Documents matching filter.",
+		Documents: results,
+	})
+}
+
+func deleteBook(c *gin.Context, repo BookRepository) {
+	id := c.Param("id")
+
+	if id == "" {
+		c.JSON(http.StatusBadRequest, BooksApiResponse{
+			Success: false,
+			Message: "Missing required fields",
+		})
+		return
+	}
+
+	err := repo.DeleteOne(c, bson.M{"id": id})
+	if err != nil {
+		c.JSON(http.StatusOK, BooksApiResponse{
+			Success: false,
+			Message: "Failed to delete book: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, BooksApiResponse{
+		Success: true,
+		Message: "1 book deleted.",
+	})
 }

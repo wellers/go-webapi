@@ -1,9 +1,12 @@
 package main
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Book struct {
-	Name        string `json:"name" bson:"name"`
-	Author      string `json:"author" bson:"author"`
-	PublishYear int    `json:"publish_year" bson:"publish_year"`
+	Id          primitive.ObjectID `json:"id" bson:"id"`
+	Name        string             `json:"name" bson:"name"`
+	Author      string             `json:"author" bson:"author"`
+	PublishYear int                `json:"publish_year" bson:"publish_year"`
 }
 
 type BooksApiResponse struct {

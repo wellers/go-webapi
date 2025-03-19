@@ -100,3 +100,32 @@ func TestFind_Success(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 }
+
+func TestDeleteBook_Success(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	mockRepo := new(MockBookRepository)
+
+	mockRepo.On("DeleteOne", mock.Anything, mock.Anything).Return(nil, nil)
+
+	router.DELETE("/book/:id", func(c *gin.Context) {
+		deleteBook(c, mockRepo)
+	})
+
+	req, _ := http.NewRequest("DELETE", "/book/1", nil)
+	req.Header.Set("Content-Type", "applications/json")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response BooksApiResponse
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.True(t, response.Success)
+	assert.Equal(t, "1 book deleted.", response.Message)
+
+	mockRepo.AssertExpectations(t)
+}

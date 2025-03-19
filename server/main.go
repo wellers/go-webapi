@@ -67,4 +67,7 @@ func registerRoutes(r *gin.Engine, repo *MongoBookRepository) {
 	r.GET("/books", func(c *gin.Context) {
 		getBooks(c, repo)
 	})
+	r.DELETE("/book/:id", func(c *gin.Context) {
+		deleteBook(c, repo)
+	})
 }
