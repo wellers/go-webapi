@@ -75,16 +75,16 @@ func registerRoutes(r *gin.Engine, repo *repos.MongoBookRepository, validToken s
 
 	authMiddleware := middleware.AuthMiddleware(validToken)
 
-	authorised := r.Group("/")
+	authorised := r.Group("/api/v1/")
 	authorised.Use(authMiddleware)
 	{
-		authorised.POST("/book", func(c *gin.Context) {
+		authorised.POST("/books", func(c *gin.Context) {
 			handlers.InsertBook(c, repo)
 		})
 		authorised.GET("/books", func(c *gin.Context) {
 			handlers.GetBooks(c, repo)
 		})
-		authorised.DELETE("/book/:id", func(c *gin.Context) {
+		authorised.DELETE("/books/:id", func(c *gin.Context) {
 			handlers.DeleteBook(c, repo)
 		})
 	}

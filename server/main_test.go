@@ -50,12 +50,12 @@ func TestInsertBook_Success(t *testing.T) {
 
 	mockRepo.On("InsertOne", mock.Anything, mock.Anything).Return(nil, nil)
 
-	router.POST("/book", func(c *gin.Context) {
+	router.POST("/api/v1/books", func(c *gin.Context) {
 		handlers.InsertBook(c, mockRepo)
 	})
 
 	body := `{"name": "The Go Programming Language", "author": "Alan Donovan", "publish_year": 2015}`
-	req, _ := http.NewRequest("POST", "/book", bytes.NewBufferString(body))
+	req, _ := http.NewRequest("POST", "/api/v1/books", bytes.NewBufferString(body))
 	req.Header.Set("Content-Type", "applications/json")
 	w := httptest.NewRecorder()
 
@@ -80,11 +80,11 @@ func TestFind_Success(t *testing.T) {
 
 	mockRepo.On("Find", mock.Anything, mock.Anything).Return(nil, nil)
 
-	router.GET("/books", func(c *gin.Context) {
+	router.GET("/api/v1/books", func(c *gin.Context) {
 		handlers.GetBooks(c, mockRepo)
 	})
 
-	req, _ := http.NewRequest("GET", "/books", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/books", nil)
 	req.Header.Set("Content-Type", "applications/json")
 	w := httptest.NewRecorder()
 
@@ -113,11 +113,11 @@ func TestDeleteBook_Success(t *testing.T) {
 
 	mockRepo.On("DeleteOne", mock.Anything, mock.Anything).Return(nil, nil)
 
-	router.DELETE("/book/:id", func(c *gin.Context) {
+	router.DELETE("/api/v1/books/:id", func(c *gin.Context) {
 		handlers.DeleteBook(c, mockRepo)
 	})
 
-	req, _ := http.NewRequest("DELETE", "/book/67b62e32b475b5eccc413498", nil)
+	req, _ := http.NewRequest("DELETE", "/api/v1/books/67b62e32b475b5eccc413498", nil)
 	req.Header.Set("Content-Type", "applications/json")
 	w := httptest.NewRecorder()
 

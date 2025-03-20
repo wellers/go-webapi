@@ -99,7 +99,7 @@ func (suite *ServerTestSuite) TestPostBook() {
 		"publish_year": 1898
 	}`
 
-	req, err := http.NewRequest("POST", serverUrl+"/book", bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest("POST", serverUrl+"/api/v1/books", bytes.NewBuffer([]byte(jsonData)))
 	req.Header.Set("Authorization", "Bearer "+validToken)
 	req.Header.Add("Accept", "application/json")
 	assert.NoError(suite.T(), err)
@@ -125,7 +125,7 @@ func (suite *ServerTestSuite) TestPostBook() {
 func (suite *ServerTestSuite) TestGetBooks() {
 	serverUrl := os.Getenv("SERVER_URI")
 	validToken := os.Getenv("VALID_TOKEN")
-	req, err := http.NewRequest("GET", serverUrl+"/books", bytes.NewBuffer(nil))
+	req, err := http.NewRequest("GET", serverUrl+"/api/v1/books", bytes.NewBuffer(nil))
 	req.Header.Set("Authorization", "Bearer "+validToken)
 	req.Header.Add("Accept", "application/json")
 	assert.NoError(suite.T(), err)
@@ -158,7 +158,7 @@ func (suite *ServerTestSuite) TestDeleteBook() {
 	serverUrl := os.Getenv("SERVER_URI")
 	validToken := os.Getenv("VALID_TOKEN")
 
-	req, err := http.NewRequest("DELETE", serverUrl+"/book/"+testId.Hex(), bytes.NewBuffer(nil))
+	req, err := http.NewRequest("DELETE", serverUrl+"/api/v1/books/"+testId.Hex(), bytes.NewBuffer(nil))
 	req.Header.Set("Authorization", "Bearer "+validToken)
 	req.Header.Add("Accept", "application/json")
 	assert.NoError(suite.T(), err)
