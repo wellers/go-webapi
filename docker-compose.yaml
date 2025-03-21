@@ -12,7 +12,7 @@ services:
     build: ./server
     ports:
       - 8080:80
-    restart: on-failure    
+    restart: on-failure
     depends_on:
       - mongo
     networks:
@@ -21,8 +21,8 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - VALID_TOKEN=test1234
   test:
-    build: ./test    
-    restart: on-failure    
+    build: ./test
+    profiles: ["test"]
     depends_on:
       - mongo
       - server
@@ -32,7 +32,6 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - SERVER_URI=http://192.168.50.100:8080
       - VALID_TOKEN=test1234
-      - RUN_TESTS=true
 networks:
   my_network:
     driver: bridge

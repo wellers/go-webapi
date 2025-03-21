@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"testing"
 	"time"
 
@@ -181,21 +180,6 @@ func (suite *ServerTestSuite) TestDeleteBook() {
 	assert.Equal(suite.T(), "1 book deleted.", response.Message)
 }
 
-func getEnvAsBool(name string, defaultValue bool) bool {
-	valStr := os.Getenv(name)
-	if valStr == "" {
-		return defaultValue
-	}
-	val, err := strconv.ParseBool(valStr)
-	if err != nil {
-		fmt.Printf("Warning: Invalid boolean value for %s: %s\n", name, valStr)
-		return defaultValue
-	}
-	return val
-}
-
 func TestServer(t *testing.T) {
-	if getEnvAsBool("RUN_TESTS", false) {
-		suite.Run(t, new(ServerTestSuite))
-	}
+	suite.Run(t, new(ServerTestSuite))
 }
