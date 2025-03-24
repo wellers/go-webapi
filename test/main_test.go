@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"test/internal/types"
+	"github.com/wellers/webapi-shared/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

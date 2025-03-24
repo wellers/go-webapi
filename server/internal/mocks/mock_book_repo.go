@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"server/internal/repos"
-	"server/internal/types"
+
+	"github.com/wellers/webapi-shared/types"
 
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson"

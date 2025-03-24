@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"server/internal/repos"
-	"server/internal/types"
+
+	"github.com/wellers/webapi-shared/types"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"

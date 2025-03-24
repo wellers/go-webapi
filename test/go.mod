@@ -2,6 +2,10 @@ module test
 
 go 1.23
 
+replace github.com/wellers/webapi-shared => ../shared
+
+require github.com/wellers/webapi-shared v1.0.0
+
 require github.com/stretchr/testify v1.10.0
 
 require (

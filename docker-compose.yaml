@@ -8,6 +8,8 @@ services:
       - ~/temp:/data/db
     networks:
       - my_network
+  shared:
+    build: ./shared
   server:
     build: ./server
     ports:
@@ -15,6 +17,7 @@ services:
     restart: on-failure
     depends_on:
       - mongo
+      - shared
     networks:
       - my_network
     environment:
@@ -25,6 +28,7 @@ services:
     profiles: ["test"]
     depends_on:
       - mongo
+      - shared
       - server
     networks:
       - my_network

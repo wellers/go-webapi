@@ -10,7 +10,8 @@ import (
 
 	"server/internal/handlers"
 	"server/internal/mocks"
-	"server/internal/types"
+
+	"github.com/wellers/webapi-shared/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
